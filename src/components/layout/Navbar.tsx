@@ -7,10 +7,10 @@ import { sound } from '../../lib/sound';
 interface NavbarProps {
   onGoToStudio: () => void;
   onScrollToGallery: () => void;
-  artistName: string;
+  artistName?: string;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onGoToStudio, onScrollToGallery, artistName }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onGoToStudio, onScrollToGallery }) => {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-white/5 bg-[#090A0D]/80 backdrop-blur-2xl transition-all">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
@@ -32,12 +32,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onGoToStudio, onScrollToGallery,
 
           {/* Desktop Wide Monogram Icon - Shown when side margins are wide */}
           <div className="hidden min-[1380px]:flex h-9 w-9 items-center justify-center rounded-full border border-[#D4AF37]/50 bg-[#D4AF37]/10 text-xs font-serif font-bold text-[#FFE599] shadow-inner">
-            V
+            T
           </div>
 
           <div>
             <span className="font-serif text-base sm:text-lg font-normal tracking-wide text-white block leading-tight">
-              {artistName}
+              ilToro
             </span>
             <span className="text-[8px] sm:text-[9px] font-mono tracking-widest text-[#D4AF37] uppercase block">
               Atelier & Fine Arts
