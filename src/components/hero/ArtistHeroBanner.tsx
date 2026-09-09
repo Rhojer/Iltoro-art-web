@@ -22,6 +22,8 @@ export const ArtistHeroBanner: React.FC<ArtistHeroBannerProps> = ({ profile, onE
   const opacity = useTransform(scrollY, [150, 600], [1, 0.05]);
   const y = useTransform(scrollY, [0, 650], [0, -20]);
 
+  const topExhibition = profile.exhibitions && profile.exhibitions.length > 0 ? profile.exhibitions[0] : null;
+
   const slides = [
     {
       id: 'quien-soy',
@@ -30,7 +32,7 @@ export const ArtistHeroBanner: React.FC<ArtistHeroBannerProps> = ({ profile, onE
       mainTitle: profile.name,
       navLabel: '¿Quién Soy?',
       description: profile.bio,
-      highlight: profile.dreams,
+      highlight: profile.dreams || 'Transformar espacios en portales de contemplación profunda.',
       highlightLabel: 'El Sueño del Creador',
       image: profile.portraitUrl,
       accent: 'Óleo & Pan de Oro',
@@ -40,26 +42,30 @@ export const ArtistHeroBanner: React.FC<ArtistHeroBannerProps> = ({ profile, onE
       id: 'manifiesto',
       badge: 'Declaración Poética',
       eyebrow: 'El Manifiesto',
-      mainTitle: 'La Alquimia de la Materia',
+      mainTitle: profile.tagline || 'La Alquimia de la Materia',
       navLabel: 'El Manifiesto',
-      description: profile.statement,
-      highlight: 'Cada cuadro se concibe como una reliquia viva, tallada con pigmentos de tierras sagradas y sellada bajo la luz del fuego.',
+      description: profile.statement || profile.bio,
+      highlight: profile.statement || 'Cada cuadro se concibe como una reliquia viva, tallada con pigmentos de tierras sagradas y sellada bajo la luz del fuego.',
       highlightLabel: 'Filosofía Pictórica',
-      image: profile.studioImageUrl,
-      accent: 'Proceso de Estudio',
+      image: profile.studioImageUrl || profile.portraitUrl,
+      accent: profile.location || 'Atelier & Fine Arts',
       icon: Compass
     },
     {
       id: 'trayectoria',
-      badge: 'Reconocimiento Internacional',
+      badge: 'Reconocimiento & Trayectoria',
       eyebrow: 'Trayectoria',
-      mainTitle: 'Exposiciones & Galardones',
+      mainTitle: topExhibition ? `${topExhibition.title} (${topExhibition.year})` : 'Exposiciones & Galardones',
       navLabel: 'Trayectoria',
-      description: 'Obras presentes en colecciones privadas de Europa, América y Asia. Participación recurrente en bienales y salas de subasta contemporáneas.',
-      highlight: 'Seleccionado en Art Basel y Marlborough Gallery por la pureza de sus contrastes y la fuerza del arquetipo.',
+      description: profile.exhibitions && profile.exhibitions.length > 0
+        ? profile.exhibitions.map((e) => `${e.year}: "${e.title}" en ${e.location} (${e.type})`).join(' · ')
+        : 'Obras presentes en colecciones privadas de prestigio internacional.',
+      highlight: topExhibition
+        ? `Exposición destacada: "${topExhibition.title}" presentada en ${topExhibition.location}.`
+        : 'Seleccionado en galerías internacionales por la pureza de sus contrastes y la fuerza del arquetipo.',
       highlightLabel: 'Hito Curatorial',
-      image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=1600&auto=format&fit=crop',
-      accent: 'Madrid · CDMX · París',
+      image: profile.studioImageUrl || profile.portraitUrl,
+      accent: profile.location || 'Madrid · CDMX',
       icon: Award
     }
   ];
