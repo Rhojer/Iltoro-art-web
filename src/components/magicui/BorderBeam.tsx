@@ -6,6 +6,7 @@ interface BorderBeamProps {
   size?: number;
   duration?: number;
   borderWidth?: number;
+  anchor?: number;
   colorFrom?: string;
   colorTo?: string;
   delay?: number;
@@ -15,10 +16,10 @@ interface BorderBeamProps {
 
 export const BorderBeam: React.FC<BorderBeamProps> = ({
   className = "",
-  borderWidth = 2.4,
+  borderWidth = 2,
   colorFrom = "#D4AF37",
   colorTo = "#FFFFFF",
-  delay = 3.9, // Synchronized to activate right when the silhouette light beam fades
+  delay = 3.9, // Activates exactly when the bull silhouette light beam dissolves
   cycleInterval = 8500,
   borderRadius = 32,
 }) => {
@@ -43,21 +44,18 @@ export const BorderBeam: React.FC<BorderBeamProps> = ({
       <svg
         key={`border-beam-svg-${cycle}`}
         className="h-full w-full overflow-visible"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
           <linearGradient id={`grad-${uniqueId}`} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor={colorFrom} stopOpacity="0" />
-            <stop offset="35%" stopColor={colorTo} stopOpacity="1" />
-            <stop offset="65%" stopColor="#FFE599" stopOpacity="1" />
+            <stop offset="50%" stopColor={colorTo} stopOpacity="1" />
             <stop offset="100%" stopColor={colorFrom} stopOpacity="0" />
           </linearGradient>
 
           <filter id={`glow-${uniqueId}`} x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="2" result="blur1" />
-            <feGaussianBlur stdDeviation="5" result="blur2" />
+            <feGaussianBlur stdDeviation="2.5" result="blur1" />
+            <feGaussianBlur stdDeviation="6" result="blur2" />
             <feMerge>
               <feMergeNode in="blur2" />
               <feMergeNode in="blur1" />
@@ -66,32 +64,29 @@ export const BorderBeam: React.FC<BorderBeamProps> = ({
           </filter>
         </defs>
 
-        {/* Single continuous unsegmented light beam traversing the perimeter */}
+        {/* Outer Perimeter Laser Beam Travel - Single continuous large coverage */}
         <motion.rect
-          x="0.8"
-          y="0.8"
-          width="98.4"
-          height="98.4"
-          rx="6"
-          ry="6"
+          x={borderWidth / 2}
+          y={borderWidth / 2}
+          width={`calc(100% - ${borderWidth}px)`}
+          height={`calc(100% - ${borderWidth}px)`}
+          rx={borderRadius}
+          ry={borderRadius}
           fill="none"
           stroke={`url(#grad-${uniqueId})`}
-          strokeWidth={borderWidth}
+          strokeWidth={borderWidth * 1.6}
           strokeLinecap="round"
-          strokeLinejoin="round"
-          vectorEffect="non-scaling-stroke"
           filter={`url(#glow-${uniqueId})`}
-          pathLength={1000}
-          strokeDasharray="180 1000"
-          initial={{ strokeDashoffset: 1000, opacity: 0 }}
+          strokeDasharray="320 1200"
+          initial={{ strokeDashoffset: 0, opacity: 0 }}
           animate={{
-            strokeDashoffset: [1000, 0],
+            strokeDashoffset: [-1000, 1000],
             opacity: [0, 1, 1, 0],
           }}
           transition={{
             delay: delay,
             duration: 3.2,
-            times: [0, 0.15, 0.85, 1],
+            times: [0, 0.2, 0.8, 1],
             ease: "easeInOut",
           }}
         />
