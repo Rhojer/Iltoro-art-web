@@ -66,29 +66,32 @@ export const BorderBeam: React.FC<BorderBeamProps> = ({
           </filter>
         </defs>
 
-        {/* Laser Light Traveling Around the Card Perimeter */}
+        {/* Single continuous unsegmented light beam traversing the perimeter */}
         <motion.rect
-          x="0.6"
-          y="0.6"
-          width="98.8"
-          height="98.8"
+          x="0.8"
+          y="0.8"
+          width="98.4"
+          height="98.4"
           rx="6"
           ry="6"
           fill="none"
           stroke={`url(#grad-${uniqueId})`}
           strokeWidth={borderWidth}
+          strokeLinecap="round"
+          strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
           filter={`url(#glow-${uniqueId})`}
-          strokeDasharray="45 100"
-          initial={{ strokeDashoffset: 0, opacity: 0 }}
+          pathLength={1000}
+          strokeDasharray="180 1000"
+          initial={{ strokeDashoffset: 1000, opacity: 0 }}
           animate={{
-            strokeDashoffset: [-180, 180],
+            strokeDashoffset: [1000, 0],
             opacity: [0, 1, 1, 0],
           }}
           transition={{
             delay: delay,
             duration: 3.2,
-            times: [0, 0.2, 0.8, 1],
+            times: [0, 0.15, 0.85, 1],
             ease: "easeInOut",
           }}
         />
