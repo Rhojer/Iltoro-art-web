@@ -19,7 +19,7 @@ const INITIAL_ARTIST_PROFILE: ArtistProfile = {
   statement: "El lienzo no es un soporte, es un campo de batalla donde la luz y la materia pactan una tregua efímera.",
   portraitUrl: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=1200&auto=format&fit=crop",
   studioImageUrl: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1600&auto=format&fit=crop",
-  whatsappNumber: "5215544332211", // Número de WhatsApp internacional del artista
+  whatsappNumber: "5215544332211",
   instagramUrl: "https://instagram.com/iltoro.art",
   email: "contacto@iltoro.art",
   location: "Madrid & Ciudad de México",
@@ -138,14 +138,18 @@ const INITIAL_ARTWORKS: Artwork[] = [
     year: 2025,
     price: 6100,
     currency: "USD",
-    status: "available",
+    status: "reserved",
+    reservedAt: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
+    reservedByName: "Colección Valenzuela",
+    reservedByEmail: "art@valenzuela.ch",
+    reservedByPhone: "+41 22 819 33 00",
     images: [
-      "https://images.unsplash.com/photo-1576769267415-9642010aa962?q=80&w=1600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1582561424760-0321d75e81fa?q=80&w=1600&auto=format&fit=crop"
+      "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=1600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1600&auto=format&fit=crop"
     ],
-    story: "Estudio sobre la calma y la quietud nocturna. Las texturas generan sombras en relieve que transforman la pieza a lo largo del día con la luz ambiental.",
-    palette: ["#232428", "#4A4D53", "#9B9DA3", "#EAEBED", "#141517"],
-    pigments: ["Gris de Payne", "Blanco de Zinc", "Negro Marfil"],
+    story: "Estudio sobre la quietud y el paso del tiempo en el monasterio de Montserrat. La textura en relieve crea sombras dinámicas con la luz cenital.",
+    palette: ["#2B2D42", "#8D99AE", "#EDF2F4", "#EF233C", "#D90429"],
+    pigments: ["Gris Payne", "Blanco de Zinc", "Negro Marfil"],
     isFeatured: false,
     createdAt: "2025-09-20T16:00:00Z"
   },
@@ -173,7 +177,156 @@ const INITIAL_ARTWORKS: Artwork[] = [
   }
 ];
 
-// In-memory reactive local store with 1-hour reservation cleaner
+// Helper database mappers
+interface DbArtworkRow {
+  id: string;
+  code: string;
+  title: string;
+  slug: string;
+  medium: string;
+  dimensions: string;
+  width_cm?: number;
+  height_cm?: number;
+  year?: number;
+  price: number;
+  currency?: string;
+  status: string;
+  reserved_at?: string | null;
+  reserved_by_name?: string | null;
+  reserved_by_email?: string | null;
+  reserved_by_phone?: string | null;
+  images?: string[];
+  story?: string;
+  inspiration?: string;
+  palette?: string[];
+  pigments?: string[];
+  is_featured?: boolean;
+  created_at?: string;
+}
+
+interface DbProfileRow {
+  name: string;
+  tagline?: string;
+  bio: string;
+  dreams?: string;
+  statement?: string;
+  portrait_url?: string;
+  studio_image_url?: string;
+  whatsapp_number: string;
+  instagram_url?: string;
+  email?: string;
+  location?: string;
+  exhibitions?: Array<{ year: string; title: string; location: string; type: string }> | string;
+}
+
+interface DbInquiryRow {
+  id: string;
+  artwork_id?: string;
+  artwork_title: string;
+  artwork_code: string;
+  artwork_price: number;
+  buyer_name: string;
+  buyer_email: string;
+  buyer_phone: string;
+  buyer_location: string;
+  message?: string;
+  status: string;
+  created_at: string;
+  expires_at: string;
+}
+
+function mapArtworkFromDb(row: DbArtworkRow): Artwork {
+  return {
+    id: row.id,
+    code: row.code,
+    title: row.title,
+    slug: row.slug,
+    medium: row.medium,
+    dimensions: row.dimensions,
+    widthCm: row.width_cm ?? 100,
+    heightCm: row.height_cm ?? 100,
+    year: row.year ?? new Date().getFullYear(),
+    price: Number(row.price),
+    currency: row.currency || 'USD',
+    status: (row.status as ArtworkStatus) || 'available',
+    reservedAt: row.reserved_at ?? null,
+    reservedByName: row.reserved_by_name ?? null,
+    reservedByEmail: row.reserved_by_email ?? null,
+    reservedByPhone: row.reserved_by_phone ?? null,
+    images: row.images || [],
+    story: row.story || '',
+    inspiration: row.inspiration || '',
+    palette: row.palette || [],
+    pigments: row.pigments || [],
+    isFeatured: row.is_featured ?? false,
+    createdAt: row.created_at || new Date().toISOString()
+  };
+}
+
+function mapArtworkToDb(art: Artwork) {
+  return {
+    id: art.id,
+    code: art.code,
+    title: art.title,
+    slug: art.slug,
+    medium: art.medium,
+    dimensions: art.dimensions,
+    width_cm: art.widthCm,
+    height_cm: art.heightCm,
+    year: art.year,
+    price: art.price,
+    currency: art.currency,
+    status: art.status,
+    reserved_at: art.reservedAt,
+    reserved_by_name: art.reservedByName,
+    reserved_by_email: art.reservedByEmail,
+    reserved_by_phone: art.reservedByPhone,
+    images: art.images,
+    story: art.story,
+    inspiration: art.inspiration,
+    palette: art.palette,
+    pigments: art.pigments,
+    is_featured: art.isFeatured,
+    updated_at: new Date().toISOString()
+  };
+}
+
+function mapProfileFromDb(row: DbProfileRow): ArtistProfile {
+  return {
+    name: row.name,
+    tagline: row.tagline || '',
+    bio: row.bio,
+    dreams: row.dreams || '',
+    statement: row.statement || '',
+    portraitUrl: row.portrait_url || '',
+    studioImageUrl: row.studio_image_url || '',
+    whatsappNumber: row.whatsapp_number,
+    instagramUrl: row.instagram_url || '',
+    email: row.email || '',
+    location: row.location || '',
+    exhibitions: typeof row.exhibitions === 'string' ? JSON.parse(row.exhibitions) : (row.exhibitions || [])
+  };
+}
+
+function mapProfileToDb(p: ArtistProfile) {
+  return {
+    name: p.name,
+    tagline: p.tagline,
+    bio: p.bio,
+    dreams: p.dreams,
+    statement: p.statement,
+    portrait_url: p.portraitUrl,
+    studio_image_url: p.studioImageUrl,
+    whatsapp_number: p.whatsappNumber,
+    instagram_url: p.instagramUrl,
+    email: p.email,
+    location: p.location,
+    exhibitions: p.exhibitions,
+    updated_at: new Date().toISOString()
+  };
+}
+
+// In-memory & real-time reactive store connected to Supabase
 class StoreManager {
   private artworks: Artwork[] = [];
   private inquiries: Inquiry[] = [];
@@ -182,6 +335,10 @@ class StoreManager {
 
   constructor() {
     this.load();
+    if (isSupabaseConfigured && supabase) {
+      this.syncFromSupabase();
+      this.subscribeSupabase();
+    }
     // Run reservation expiration check every 15 seconds
     if (typeof window !== 'undefined') {
       setInterval(() => this.checkExpiredReservations(), 15000);
@@ -215,6 +372,64 @@ class StoreManager {
       this.profile = INITIAL_ARTIST_PROFILE;
     }
     this.checkExpiredReservations();
+  }
+
+  public async syncFromSupabase() {
+    if (!supabase) return;
+    try {
+      const [artworksRes, profileRes, inquiriesRes] = await Promise.all([
+        supabase.from('artworks').select('*').order('created_at', { ascending: false }),
+        supabase.from('artist_profile').select('*').limit(1).maybeSingle(),
+        supabase.from('inquiries').select('*').order('created_at', { ascending: false })
+      ]);
+
+      if (artworksRes.data && artworksRes.data.length > 0) {
+        this.artworks = (artworksRes.data as unknown as DbArtworkRow[]).map(mapArtworkFromDb);
+      }
+      if (profileRes.data) {
+        this.profile = mapProfileFromDb(profileRes.data as unknown as DbProfileRow);
+      }
+      if (inquiriesRes.data) {
+        this.inquiries = (inquiriesRes.data as unknown as DbInquiryRow[]).map((row) => ({
+          id: row.id,
+          artworkId: row.artwork_id || '',
+          artworkTitle: row.artwork_title,
+          artworkCode: row.artwork_code,
+          artworkPrice: Number(row.artwork_price),
+          buyerName: row.buyer_name,
+          buyerEmail: row.buyer_email,
+          buyerPhone: row.buyer_phone,
+          buyerLocation: row.buyer_location,
+          message: row.message,
+          status: row.status as Inquiry['status'],
+          createdAt: row.created_at,
+          expiresAt: row.expires_at
+        }));
+      }
+      this.save();
+    } catch (e) {
+      console.warn('Supabase initial sync info:', e);
+    }
+  }
+
+  private subscribeSupabase() {
+    if (!supabase) return;
+    try {
+      supabase
+        .channel('db-sync')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'artworks' }, () => {
+          this.syncFromSupabase();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'artist_profile' }, () => {
+          this.syncFromSupabase();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'inquiries' }, () => {
+          this.syncFromSupabase();
+        })
+        .subscribe();
+    } catch (e) {
+      console.warn('Supabase realtime channel info:', e);
+    }
   }
 
   private save() {
@@ -321,10 +536,28 @@ class StoreManager {
     this.inquiries.unshift(newInquiry);
     this.save();
 
+    if (supabase) {
+      Promise.all([
+        supabase.from('artworks').upsert(mapArtworkToDb(updatedArtwork)),
+        supabase.from('inquiries').insert({
+          artwork_id: target.id,
+          artwork_title: target.title,
+          artwork_code: target.code,
+          artwork_price: target.price,
+          buyer_name: buyer.name,
+          buyer_email: buyer.email,
+          buyer_phone: buyer.phone,
+          buyer_location: buyer.location,
+          message: buyer.message,
+          status: 'new'
+        })
+      ]).catch((e) => console.warn('Supabase reserve sync warning:', e));
+    }
+
     return { success: true, artwork: updatedArtwork };
   }
 
-  public updateArtworkStatus(artworkId: string, status: ArtworkStatus): boolean {
+  public async updateArtworkStatus(artworkId: string, status: ArtworkStatus): Promise<boolean> {
     const index = this.artworks.findIndex((a) => a.id === artworkId);
     if (index === -1) return false;
 
@@ -338,24 +571,40 @@ class StoreManager {
     };
 
     this.save();
+
+    if (supabase) {
+      try {
+        await supabase.from('artworks').upsert(mapArtworkToDb(this.artworks[index]));
+      } catch (e) {
+        console.warn('Supabase status sync warning:', e);
+      }
+    }
     return true;
   }
 
-  public extendReservation(artworkId: string): boolean {
+  public async extendReservation(artworkId: string): Promise<boolean> {
     const index = this.artworks.findIndex((a) => a.id === artworkId);
     if (index === -1) return false;
 
     this.artworks[index] = {
       ...this.artworks[index],
       status: 'reserved',
-      reservedAt: new Date().toISOString() // Reset 1-hour window
+      reservedAt: new Date().toISOString()
     };
 
     this.save();
+
+    if (supabase) {
+      try {
+        await supabase.from('artworks').upsert(mapArtworkToDb(this.artworks[index]));
+      } catch (e) {
+        console.warn('Supabase extend sync warning:', e);
+      }
+    }
     return true;
   }
 
-  public saveArtwork(artwork: Artwork): void {
+  public async saveArtwork(artwork: Artwork): Promise<void> {
     const index = this.artworks.findIndex((a) => a.id === artwork.id);
     if (index >= 0) {
       this.artworks[index] = artwork;
@@ -363,11 +612,27 @@ class StoreManager {
       this.artworks.unshift(artwork);
     }
     this.save();
+
+    if (supabase) {
+      try {
+        await supabase.from('artworks').upsert(mapArtworkToDb(artwork));
+      } catch (e) {
+        console.warn('Supabase save artwork warning:', e);
+      }
+    }
   }
 
-  public deleteArtwork(artworkId: string): void {
+  public async deleteArtwork(artworkId: string): Promise<void> {
     this.artworks = this.artworks.filter((a) => a.id !== artworkId);
     this.save();
+
+    if (supabase) {
+      try {
+        await supabase.from('artworks').delete().eq('id', artworkId);
+      } catch (e) {
+        console.warn('Supabase delete artwork warning:', e);
+      }
+    }
   }
 
   public getInquiries(): Inquiry[] {
@@ -378,9 +643,22 @@ class StoreManager {
     return { ...this.profile };
   }
 
-  public updateProfile(profile: Partial<ArtistProfile>): void {
+  public async updateProfile(profile: Partial<ArtistProfile>): Promise<void> {
     this.profile = { ...this.profile, ...profile };
     this.save();
+
+    if (supabase) {
+      try {
+        const { data } = await supabase.from('artist_profile').select('id').limit(1).maybeSingle();
+        const payload = {
+          ...mapProfileToDb(this.profile),
+          ...(data?.id ? { id: data.id } : {})
+        };
+        await supabase.from('artist_profile').upsert(payload);
+      } catch (e) {
+        console.warn('Supabase update profile warning:', e);
+      }
+    }
   }
 }
 
