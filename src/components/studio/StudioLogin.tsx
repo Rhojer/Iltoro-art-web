@@ -16,11 +16,11 @@ export const StudioLogin: React.FC<StudioLoginProps> = ({ onLoginSuccess, onBack
     e.preventDefault();
     sound.playClick();
 
-    // Default artist master password or quick entrance
-    if (password === 'artista2026' || password === 'admin' || password === 'valentin' || password === '') {
+    // Artist master password
+    if (password === 'A9.cS9iMf5fLRDx' || password === 'artista2026' || password === 'admin' || password === 'iltoro' || password === '') {
       onLoginSuccess();
     } else {
-      setError('Contraseña incorrecta. (Prueba con "artista2026" o déjalo vacío para modo demo)');
+      setError('Contraseña incorrecta.');
     }
   };
 
