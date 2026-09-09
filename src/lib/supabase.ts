@@ -1,4 +1,4 @@
-﻿import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import type { Artwork, ArtistProfile, Inquiry, ArtworkStatus } from '../types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -12,7 +12,7 @@ export const supabase = isSupabaseConfigured
 
 // Initial high-end artist profile
 const INITIAL_ARTIST_PROFILE: ArtistProfile = {
-  name: "Valentin De La Mora",
+  name: "Valentín De La Mora",
   tagline: "Maestro del Expresionismo Abstracto & Texturas Áureas",
   bio: "Pintor contemporáneo cuya obra fusiona pigmentos naturales de origen mineral, óleo denso y aplicaciones de pan de oro de 24 quilates sobre lino crudo. Sus creaciones exploran la memoria atávica, el silencio y la fuerza indomable de la naturaleza.",
   dreams: "Mi sueño es transformar espacios sagrados y contemporáneos en portales de contemplación profunda, donde cada trazo y pigmento despierte en el espectador una conexión visceral con lo sublime y lo eterno.",
