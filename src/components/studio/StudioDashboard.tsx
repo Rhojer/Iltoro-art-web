@@ -513,7 +513,7 @@ export const StudioDashboard: React.FC<StudioDashboardProps> = ({ onLogout, onGo
                 {inquiries.map((inq) => {
                   const rawPhone = inq.buyerPhone.replace(/[^0-9]/g, '');
                   const waLink = `https://wa.me/${rawPhone}?text=${encodeURIComponent(
-                    `Hola ${inq.buyerName}, un gusto saludarte. Soy Valentín De La Mora. Recibí tu solicitud para la obra "${inq.artworkTitle}" (Código: ${inq.artworkCode}). Con gusto coordinamos los detalles de adquisición y certificado.`
+                    `Hola ${inq.buyerName}, un gusto saludarte. Soy ilToro. Recibí tu solicitud para la obra "${inq.artworkTitle}" (Código: ${inq.artworkCode}). Con gusto coordinamos los detalles de adquisición y certificado.`
                   )}`;
 
                   return (

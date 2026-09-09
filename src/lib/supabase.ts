@@ -12,16 +12,16 @@ export const supabase = isSupabaseConfigured
 
 // Initial high-end artist profile
 const INITIAL_ARTIST_PROFILE: ArtistProfile = {
-  name: "Valentín De La Mora",
+  name: "ilToro",
   tagline: "Maestro del Expresionismo Abstracto & Texturas Áureas",
-  bio: "Pintor contemporáneo cuya obra fusiona pigmentos naturales de origen mineral, óleo denso y aplicaciones de pan de oro de 24 quilates sobre lino crudo. Sus creaciones exploran la memoria atávica, el silencio y la fuerza indomable de la naturaleza.",
-  dreams: "Mi sueño es transformar espacios sagrados y contemporáneos en portales de contemplación profunda, donde cada trazo y pigmento despierte en el espectador una conexión visceral con lo sublime y lo eterno.",
+  bio: "Atelier y galería de arte contemporáneo cuya obra fusiona pigmentos naturales de origen mineral, óleo denso y aplicaciones de pan de oro de 24 quilates sobre lino crudo. Creaciones que exploran la memoria atávica, el silencio y la fuerza indomable de la naturaleza.",
+  dreams: "Transformar espacios sagrados y contemporáneos en portales de contemplación profunda, donde cada trazo y pigmento despierte en el espectador una conexión visceral con lo sublime y lo eterno.",
   statement: "El lienzo no es un soporte, es un campo de batalla donde la luz y la materia pactan una tregua efímera.",
   portraitUrl: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=1200&auto=format&fit=crop",
   studioImageUrl: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1600&auto=format&fit=crop",
   whatsappNumber: "5215544332211", // Número de WhatsApp internacional del artista
-  instagramUrl: "https://instagram.com/valentin.art",
-  email: "contacto@valentinart.studio",
+  instagramUrl: "https://instagram.com/iltoro.art",
+  email: "contacto@iltoro.art",
   location: "Madrid & Ciudad de México",
   exhibitions: [
     { year: "2026", title: "El Oro y la Ceniza", location: "Galería Marlborough, Madrid", type: "Individual" },
@@ -199,7 +199,21 @@ class StoreManager {
 
     this.artworks = savedArtworks ? JSON.parse(savedArtworks) : INITIAL_ARTWORKS;
     this.inquiries = savedInquiries ? JSON.parse(savedInquiries) : [];
-    this.profile = savedProfile ? JSON.parse(savedProfile) : INITIAL_ARTIST_PROFILE;
+    if (savedProfile) {
+      try {
+        const parsed = JSON.parse(savedProfile);
+        if (!parsed.name || parsed.name.includes('Valentin') || parsed.name.includes('Valentín')) {
+          this.profile = INITIAL_ARTIST_PROFILE;
+          this.save();
+        } else {
+          this.profile = parsed;
+        }
+      } catch {
+        this.profile = INITIAL_ARTIST_PROFILE;
+      }
+    } else {
+      this.profile = INITIAL_ARTIST_PROFILE;
+    }
     this.checkExpiredReservations();
   }
 
