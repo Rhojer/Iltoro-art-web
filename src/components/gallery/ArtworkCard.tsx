@@ -56,15 +56,6 @@ export const ArtworkCard: React.FC<ArtworkCardProps> = ({
         data-artwork-card
         className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[#121316]/90 p-4 transition-all duration-500 hover:border-[#D4AF37]/40 hover:shadow-2xl hover:shadow-[#D4AF37]/10"
       >
-        {/* Animated Border Beam: Activates after the silhouette light beam disappears (~3.9s) */}
-        <BorderBeam
-          borderRadius={32}
-          delay={3.9 + (index % 6) * 0.18}
-          borderWidth={2}
-          colorFrom="#D4AF37"
-          colorTo="#FFFFFF"
-        />
-
         {/* Artwork Image Container with Rounded Corners */}
         <div
           onClick={() => {
@@ -73,6 +64,15 @@ export const ArtworkCard: React.FC<ArtworkCardProps> = ({
           }}
           className="relative aspect-[4/5] w-full cursor-pointer overflow-hidden rounded-[1.5rem] bg-zinc-950"
         >
+          {/* Animated Border Beam: Activates after the silhouette light beam disappears (~3.9s) */}
+          <BorderBeam
+            borderRadius={24}
+            delay={3.9 + (index % 6) * 0.18}
+            borderWidth={2}
+            colorFrom="#D4AF37"
+            colorTo="#FFFFFF"
+          />
+
           <img
             src={artwork.images[0]}
             alt={artwork.title}
