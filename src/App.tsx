@@ -16,12 +16,19 @@ export function App() {
   const [artworks, setArtworks] = useState<Artwork[]>(() => store.getArtworks());
   const [profile, setProfile] = useState<ArtistProfile>(() => store.getProfile());
 
+  const getBasePath = () => {
+    if (typeof window === 'undefined') return '/iltoro';
+    const path = window.location.pathname.toLowerCase();
+    if (path.startsWith('/iltoro')) return '/iltoro';
+    return '';
+  };
+
   // Navigation & View State with URL Path & Hash Support
   const [currentView, setCurrentView] = useState<'public' | 'studio-login' | 'studio-dashboard'>(() => {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.toLowerCase();
-      if (path.startsWith('/studio') || hash === '#studio') {
+      if (path.includes('/studio') || hash === '#studio') {
         return 'studio-login';
       }
     }
@@ -41,7 +48,7 @@ export function App() {
     const handlePopState = () => {
       const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.toLowerCase();
-      if (path.startsWith('/studio') || hash === '#studio') {
+      if (path.includes('/studio') || hash === '#studio') {
         setCurrentView('studio-login');
       } else {
         setCurrentView('public');
@@ -64,10 +71,11 @@ export function App() {
 
   const navigateToView = (view: 'public' | 'studio-login' | 'studio-dashboard') => {
     setCurrentView(view);
+    const base = getBasePath();
     if (view === 'public') {
-      window.history.pushState({}, '', '/');
+      window.history.pushState({}, '', base ? `${base}/` : '/');
     } else if (view === 'studio-login') {
-      window.history.pushState({}, '', '/studio');
+      window.history.pushState({}, '', `${base}/studio`);
     }
   };
 
