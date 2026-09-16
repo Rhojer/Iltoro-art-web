@@ -63,6 +63,11 @@ export function App() {
       refreshData();
     });
 
+    refreshData();
+    store.syncFromSupabase().then(() => {
+      refreshData();
+    });
+
     return () => {
       window.removeEventListener('popstate', handlePopState);
       window.removeEventListener('hashchange', handlePopState);
