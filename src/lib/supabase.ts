@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Artwork, ArtistProfile, Inquiry, ArtworkStatus } from '../types';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://asiujogugaishniivvii.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzaXVqb2d1Z2Fpc2huaWl2dmlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5NjQ2NjcsImV4cCI6MjEwNDU0MDY2N30.r5v5q4zZZWWkItE8-5rHAksS2GB0gKI8PIzYnECH1Es';
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
