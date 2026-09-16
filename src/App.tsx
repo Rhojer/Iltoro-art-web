@@ -17,8 +17,9 @@ export function App() {
   const [profile, setProfile] = useState<ArtistProfile>(() => store.getProfile());
 
   const getBasePath = () => {
-    if (typeof window === 'undefined') return '/iltoro';
+    if (typeof window === 'undefined') return '';
     const path = window.location.pathname.toLowerCase();
+    if (path.startsWith('/iltoro-art-web')) return '/Iltoro-art-web';
     if (path.startsWith('/iltoro')) return '/iltoro';
     return '';
   };
@@ -75,7 +76,7 @@ export function App() {
     if (view === 'public') {
       window.history.pushState({}, '', base ? `${base}/` : '/');
     } else if (view === 'studio-login') {
-      window.history.pushState({}, '', `${base}/studio`);
+      window.history.pushState({}, '', `${base ? `${base}/` : '/'}#studio`);
     }
   };
 
