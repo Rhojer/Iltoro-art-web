@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { sound } from '../../lib/sound';
@@ -55,13 +55,43 @@ export const RoomSimulator: React.FC<RoomSimulatorProps> = ({ artwork, onClose, 
   const pixelWidth = Math.min(Math.max(artwork.widthCm * baseScale, 180), 380);
   const pixelHeight = Math.min(Math.max(artwork.heightCm * baseScale, 150), 340);
 
+  // Lock body & HTML scroll when RoomSimulator is mounted
+  useEffect(() => {
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyPaddingRight = document.body.style.paddingRight;
+
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.paddingRight = prevBodyPaddingRight;
+    };
+  }, []);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md">
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          sound.playClick();
+          onClose();
+        }
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overscroll-contain bg-black/85 p-3 sm:p-6 backdrop-blur-md"
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="relative flex h-full max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0E0F13] shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+        className="relative my-auto flex h-full max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0E0F13] shadow-2xl"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
