@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, ShoppingBag, Clock, Send, CheckCircle2, MessageCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -31,6 +31,28 @@ export const ReservationModal: React.FC<ReservationModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [whatsappUrl, setWhatsappUrl] = useState('');
+
+  // Lock body & HTML scroll when modal is mounted so background page does not scroll
+  useEffect(() => {
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyPaddingRight = document.body.style.paddingRight;
+
+    // Prevent layout shift from scrollbar disappearing
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.paddingRight = prevBodyPaddingRight;
+    };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,22 +115,33 @@ export const ReservationModal: React.FC<ReservationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-xl">
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          sound.playClick();
+          onClose();
+        }
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overscroll-contain bg-black/90 p-3 sm:p-6 backdrop-blur-xl"
+    >
       <motion.div
-        initial={{ opacity: 0, scale: 0.94 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.94 }}
-        className="relative w-full max-w-lg overflow-hidden rounded-[2.5rem] border border-white/15 bg-[#121316] p-6 shadow-2xl sm:p-8"
+        initial={{ opacity: 0, scale: 0.94, y: 15 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 15 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative my-auto flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] border border-white/15 bg-[#121316] shadow-2xl"
       >
         <button
           onClick={() => {
             sound.playClick();
             onClose();
           }}
-          className="absolute top-4 right-4 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/10 text-zinc-400 hover:text-white"
+          className="absolute top-4 right-4 z-20 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-black/60 text-zinc-400 backdrop-blur-md transition-colors hover:bg-white/15 hover:text-white"
         >
           <X className="h-5 w-5" />
         </button>
+
+        <div className="overflow-y-auto overscroll-contain p-6 sm:p-8">
 
         {!isCompleted ? (
           <div>
@@ -275,6 +308,7 @@ export const ReservationModal: React.FC<ReservationModalProps> = ({
             </div>
           </div>
         )}
+        </div>
       </motion.div>
     </div>
   );
