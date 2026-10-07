@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Markdown / Documentos e instrucciones de IA
+*.md
+**/*.md
+.agent/
+.cursor/
+.claude/
