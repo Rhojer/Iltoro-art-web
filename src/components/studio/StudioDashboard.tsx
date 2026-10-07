@@ -39,7 +39,7 @@ export const StudioDashboard: React.FC<StudioDashboardProps> = ({ onLogout, onGo
 
   const [artworkForm, setArtworkForm] = useState<Partial<Artwork>>({
     title: '',
-    code: `VAL-2026-00${artworks.length + 1}`,
+    code: `TORO-2026-00${artworks.length + 1}`,
     medium: 'Óleo sobre lino y pan de oro',
     dimensions: '150 x 120 cm',
     widthCm: 150,
@@ -148,7 +148,7 @@ export const StudioDashboard: React.FC<StudioDashboardProps> = ({ onLogout, onGo
     setEditingArtworkId(null);
     setArtworkForm({
       title: '',
-      code: `VAL-2026-00${artworks.length + 1}`,
+      code: `TORO-2026-00${artworks.length + 1}`,
       medium: 'Óleo sobre lino y pan de oro',
       dimensions: '150 x 120 cm',
       widthCm: 150,
@@ -204,7 +204,7 @@ export const StudioDashboard: React.FC<StudioDashboardProps> = ({ onLogout, onGo
       // Creating new artwork
       const created: Artwork = {
         id: `art-${Date.now()}`,
-        code: artworkForm.code || `VAL-2026-${Date.now().toString().slice(-3)}`,
+        code: artworkForm.code || `TORO-2026-${Date.now().toString().slice(-3)}`,
         title: artworkForm.title,
         slug: (artworkForm.title || '').toLowerCase().replace(/\s+/g, '-'),
         medium: artworkForm.medium || 'Óleo y Pan de Oro',

@@ -35,7 +35,7 @@ const INITIAL_ARTIST_PROFILE: ArtistProfile = {
 const INITIAL_ARTWORKS: Artwork[] = [
   {
     id: "art-01",
-    code: "VAL-2026-001",
+    code: "TORO-2026-001",
     title: "El Despertar del Minotauro",
     slug: "el-despertar-del-minotauro",
     medium: "Óleo empastado, pan de oro de 24k y carbón vegetal sobre lino belga",
@@ -59,7 +59,7 @@ const INITIAL_ARTWORKS: Artwork[] = [
   },
   {
     id: "art-02",
-    code: "VAL-2026-002",
+    code: "TORO-2026-002",
     title: "Sinfonía en Azul Cobalto y Obsidiana",
     slug: "sinfonia-en-azul-cobalto-y-obsidiana",
     medium: "Técnica mixta con pigmento ultramar puro, ceniza volcánica y resina mate",
@@ -82,7 +82,7 @@ const INITIAL_ARTWORKS: Artwork[] = [
   },
   {
     id: "art-03",
-    code: "VAL-2025-009",
+    code: "TORO-2025-009",
     title: "Canto de la Tierra Negra",
     slug: "canto-de-la-tierra-negra",
     medium: "Óleo al temple, corteza molida y polvo de mármol sobre tabla de roble",
@@ -105,7 +105,7 @@ const INITIAL_ARTWORKS: Artwork[] = [
   },
   {
     id: "art-04",
-    code: "VAL-2025-012",
+    code: "TORO-2025-012",
     title: "Geometría del Solsticio",
     slug: "geometria-del-solsticio",
     medium: "Acrílico estructural, pigmento cadmio y láminas de latón bruñido",
@@ -128,7 +128,7 @@ const INITIAL_ARTWORKS: Artwork[] = [
   },
   {
     id: "art-05",
-    code: "VAL-2025-006",
+    code: "TORO-2025-006",
     title: "El Silencio de las Horas",
     slug: "el-silencio-de-las-horas",
     medium: "Óleo monocromático con espatulado sobre lienzo de algodón pesado",
@@ -155,7 +155,7 @@ const INITIAL_ARTWORKS: Artwork[] = [
   },
   {
     id: "art-06",
-    code: "VAL-2024-018",
+    code: "TORO-2024-018",
     title: "Fuego Sagrado & Cenizas",
     slug: "fuego-sagrado-y-cenizas",
     medium: "Óleo, pigmentos carmín y pan de cobre sobre lino montado en bastidor flotante",
@@ -355,6 +355,14 @@ class StoreManager {
     const savedProfile = localStorage.getItem('artist_profile_store');
 
     this.artworks = savedArtworks ? JSON.parse(savedArtworks) : INITIAL_ARTWORKS;
+    // Migrate any legacy template VAL- codes to TORO-
+    if (this.artworks.some((a) => a.code && a.code.startsWith('VAL-'))) {
+      this.artworks = this.artworks.map((a) => ({
+        ...a,
+        code: a.code.startsWith('VAL-') ? a.code.replace('VAL-', 'TORO-') : a.code,
+      }));
+      this.save();
+    }
     this.inquiries = savedInquiries ? JSON.parse(savedInquiries) : [];
     if (savedProfile) {
       try {

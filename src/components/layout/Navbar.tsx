@@ -19,7 +19,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onGoToStudio, onScrollToGallery,
           {/* Animated Bull Light Silhouette Badge - Shown when lateral margins are narrow/not visible */}
           <div
             onClick={() => sound.playBullResonance()}
-            title="Toro De La Mora"
+            title="ilToro"
             className="flex min-[1380px]:hidden h-9 w-11 items-center justify-center rounded-lg border border-[#D4AF37]/40 bg-[#D4AF37]/10 p-1 cursor-pointer shadow-[0_0_12px_rgba(212,175,55,0.2)]"
           >
             <GeometricBullTrace
@@ -32,7 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onGoToStudio, onScrollToGallery,
 
           {/* Desktop Wide Monogram Icon - Shown when side margins are wide */}
           <div className="hidden min-[1380px]:flex h-9 w-9 items-center justify-center rounded-full border border-[#D4AF37]/50 bg-[#D4AF37]/10 text-xs font-serif font-bold text-[#FFE599] shadow-inner">
-            {artistName ? artistName.charAt(0).toUpperCase() : 'V'}
+            {artistName ? artistName.charAt(0).toUpperCase() : 'T'}
           </div>
 
           <div>
